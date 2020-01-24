@@ -26,8 +26,24 @@ else
     dest="${log_file%.*}.do"
 fi
 
+test -e $dest
+if [ $? -eq 0 ]; then
+    echo "$dest exists and will be overwritten."
+    while true; do
+        read -p "Continue? [y/N]: " yn
+        case $yn in
+            [Yy]* ) break;;
+            * ) echo "Exiting..."; exit 0;;
+        esac
+    done
+fi
+
 if [ $log_ext == "log" ]; then
     grep -hE "^[>.] " $log_file | sed ':a;N;$!ba;s/\n> //g' | sed 's/^[.] //g '> $dest
+    tail -n 1 $dest | grep "log close" >> /dev/null
+    if [ $? -eq 0 ]; then
+        head -n -1 $dest >> $dest
+    fi
 else
     echo "Only accepts unformatted .log files"
     exit 1
