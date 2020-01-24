@@ -1,9 +1,36 @@
 #!/bin/bash
 
-if [[ $# -ne 1 ]]; then
-	echo "Please enter only log file"
-	exit 
+usage() {
+	echo "Usage:"
+    echo "Required: Enter .log file as first argument"
+    echo "Optional: Enter .do file destination as second argument"
+}
+
+if [[ $# -eq 0 ]]; then
+    usage
+	exit 1
 fi
 
-filename=$1
-cat $filename | grep '^[. ] [A-Za-z]' | sed 's/^..//' | tail -n +2 | head -n -1 > "${filename%.*}.do"
+if [ $1 == help ]; then
+    usage
+    exit 1
+fi
+
+log_file=$1
+do_file=$2
+log_ext="${log_file##*.}"
+
+if [ $# -eq 2 ]; then
+    dest=$do_file
+else
+    dest="${log_file%.*}.do"
+fi
+
+if [ $log_ext == "log" ]; then
+    cat $log_file| grep '^[. ] [A-Za-z]' | sed 's/^..//' | tail -n +2 | head -n -1 > $dest
+else
+    echo "Only accepts unformatted .log files"
+    exit 1
+fi
+
+exit 0
