@@ -27,7 +27,11 @@ else
 fi
 
 if [ $log_ext == "log" ]; then
+    #temp_file=$(mktemp XXXXXX.txt)
+    #grep -hnE "^[>] " $log_file > $temp_file
+    #python fix_multi_lines.py $temp_file $log_file
     cat $log_file| grep '^[. ] [A-Za-z]' | sed 's/^..//' | tail -n +2 | head -n -1 > $dest
+    #rm $temp_file
 else
     echo "Only accepts unformatted .log files"
     exit 1

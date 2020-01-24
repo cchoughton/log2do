@@ -8,9 +8,9 @@ else
 fi
 
 sudo cp log2do $install_dir
+err=$?
 
-if [[ $? -ne 0 ]]; then
-    err=$?
+if [[ $err -ne 0 ]]; then
     echo "Error: $err"
     echo "Could not install log2do"
     exit $err
