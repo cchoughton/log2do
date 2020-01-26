@@ -1,14 +1,14 @@
 #!/bin/bash
 
 usage() {
-	echo "Usage:"
+    echo "Usage:"
     echo "Required: Enter .log file as first argument"
     echo "Optional: Enter .do file destination as second argument"
 }
 
 if [[ $# -eq 0 ]]; then
     usage
-	exit 1
+    exit 1
 fi
 
 if [ $1 == help ]; then
@@ -42,7 +42,7 @@ if [ $log_ext == "log" ]; then
     grep -hE "^[>.] " $log_file | sed ':a;N;$!ba;s/\n> //g' | sed 's/^[.] //g '> $dest
     tail -n 1 $dest | grep "log close" >> /dev/null
     if [ $? -eq 0 ]; then
-        head -n -1 $dest >> $dest
+        sed -i '$d' $dest
     fi
 else
     echo "Only accepts unformatted .log files"
