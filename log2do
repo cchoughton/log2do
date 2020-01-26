@@ -11,7 +11,7 @@ if [[ $# -eq 0 ]]; then
     exit 1
 fi
 
-if [ $1 == help ]; then
+if [ $1 == "help" ]; then
     usage
     exit 1
 fi
@@ -20,12 +20,24 @@ log_file=$1
 do_file=$2
 log_ext="${log_file##*.}"
 
+
+# Check for appropriate file extension 
+# .log - unformatted
+# .smcl - formatted
+if [ $log_ext != "log" ] && [ $log_ext != "smcl" ]; then
+    echo "Only accepts .log or smcl stata log files"
+    exit 1
+fi
+
+# If destination is specified, use it.
+# If no destination, create do file with same name as log file.
 if [ $# -eq 2 ]; then
     dest=$do_file
 else
     dest="${log_file%.*}.do"
 fi
 
+# Check if writing over existing do file
 test -e $dest
 if [ $? -eq 0 ]; then
     echo "$dest exists and will be overwritten."
@@ -38,15 +50,21 @@ if [ $? -eq 0 ]; then
     done
 fi
 
+# If log file is unformatted
 if [ $log_ext == "log" ]; then
-    grep -hE "^[>.] " $log_file | sed ':a;N;$!ba;s/\n> //g' | sed 's/^[.] //g '> $dest
-    tail -n 1 $dest | grep "log close" >> /dev/null
-    if [ $? -eq 0 ]; then
-        sed -i '$d' $dest
-    fi
-else
-    echo "Only accepts unformatted .log files"
-    exit 1
+    grep -hE "^[>.] " $log_file | sed ':a;N;$!ba;s/\n> //g' | sed 's/^[.] //g ' > $dest
+fi
+
+# If log file is formatted
+if [ $log_ext == "smcl" ]; then
+    cat $log_file | sed 's/{[A-Z]*[a-z]*}//g' | \
+        grep -hE "^[>.] " | sed ':a;N;$!ba;s/\n> //g' | sed 's/^[.] //g ' > $dest
+fi
+
+# Remove last line if it is "log close" or "exit"
+tail -n 1 $dest | grep -E "log close|exit" >> /dev/null
+if [ $? -eq 0 ]; then
+    sed -i '$d' $dest
 fi
 
 exit 0

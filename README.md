@@ -1,5 +1,9 @@
-### Simple Stata .log to .do file converter.
+Stata .log and .smcl to .do file converter.
 
-TODO:
+```shell
+log2do mylog.log
+```
 
-Add support for formatted log files
+```shell
+log2do mylog.smcl newdo.do
+```
