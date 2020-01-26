@@ -2,11 +2,11 @@
 
 Examples:
 
-```shell
+```
 log2do mylog.log
 ```
 
-```shell
+```
 log2do mylog.smcl newdo.do
 ```
 
@@ -18,3 +18,10 @@ The script will check for file overwrites. If you want to force file overwrites:
 ```
 yes | log2do ...
 ```
+
+
+To install:
+```
+./install /dir/to/install
+```
+If no directory is specified, install defaults to /usr/local/bin.
